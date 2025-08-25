@@ -1,0 +1,56 @@
+openapi: 3.0.3
+info:
+  title: User Management API
+  version: 1.0.0
+
+paths:
+  /users:
+    get:
+      summary: Récupérer une liste d'utilisateurs
+      description: Retourne une liste d'utilisateurs paginée.
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: Numéro de page (par defaut 1)
+          schema:
+            type: integer
+            minimum: 1
+        - name: size
+          in: query
+          required: false
+          description: Nombre d'utilisateurs par page (par défaut 200)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      responses:
+        "200":
+          description: Liste des utilisateurs retrouvéussie
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type : string
+                    example: Alice
+                  email:
+                    type: string
+                    format: email
+                    example: alice@example.com
+        "400":
+          description: Mauvais types de paramètres fournis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Bad types for provided query paramters"           
