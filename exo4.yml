@@ -1,0 +1,73 @@
+openapi: 3.0.3
+info:
+  title: API Produits
+  version: 1.0.0
+
+paths:
+  /products:
+    get:
+      summary: Recherche de produits
+      description: Retourne une liste de produits selon les critères de recherche.
+      parameters:
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/QParam"
+      responses:
+        "200":
+          description: Liste de produits trouvés.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+              examples:
+                multipleProducts:
+                  summary: Plusieurs produits trouvés
+                  value:
+                    - name: "Voatabia amin'ny boaty"
+                      expiration_datetime: "2025-09-15T14:30:00Z"
+                      price: 3.20
+                    - name: "Vary amin'ny anana"
+                      expiration_datetime: "2025-08-30T12:00:00Z"
+                      price: 2.50
+                emptyList:
+                  summary: Aucun produit trouvé
+                  value: []
+
+components:
+  parameters:
+    LimitParam:
+      name: limit
+      in: query
+      description: Nombre maximum d’éléments à retourner.
+      required: false
+      schema:
+        type: integer
+        example: 10
+    QParam:
+      name: q
+      in: query
+      description: Terme de recherche.
+      required: false
+      schema:
+        type: string
+        example: "voatabia amin'ny boaty"
+
+  schemas:
+    Product:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nom du produit.
+          example: "Voatabia amin'ny boaty"
+        expiration_datetime:
+          type: string
+          format: date-time
+          description: Date d’expiration du produit.
+          example: "2025-09-15T14:30:00Z"
+        price:
+          type: number
+          format: float
+          description: Prix du produit.
+          example: 3.20
