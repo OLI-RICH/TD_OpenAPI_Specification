@@ -1,0 +1,166 @@
+openapi: 3.0.3
+info:
+  title: API Exercice – Produits et Commandes
+  version: 1.0.0
+
+servers:
+  - url: https://api.exercice.local/v1
+
+tags:
+  - name: Products
+    description: Opérations liées aux produits
+  - name: Orders
+    description: Opérations liées aux commandes
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "ordinateur portable hp omen"
+        price:
+          type: number
+          format: float
+          example: 1650000
+    Order:
+      type: object
+      properties:
+        identifier:
+          type: integer
+          example: 1234
+        customer_name:
+          type: string
+          example: "Olivier"
+        creation_datetime:
+          type: string
+          format: date-time
+          example: "2025-08-30T12:34:56Z"
+        total_amount:
+          type: number
+          format: float
+          example: 1499.95
+
+  parameters:
+    page:
+      in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+      description: Numéro de page pour la pagination
+    size:
+      in: query
+      name: size
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        example: 20
+      description: Taille de la page pour la pagination
+
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+
+paths:
+  /products:
+    get:
+      tags:
+        - Products
+      summary: Liste des produits
+      operationId: listProducts
+      responses:
+        '200':
+          description: Liste des produits
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+              examples:
+                sample:
+                  summary: Exemple de produits
+                  value: 
+                    - id: 1
+                      name: "ordinateur portable hp omen"
+                      price: 1650000
+                    - id: 2
+                      name: "souris sans fil"
+                      price: 125000
+
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: Liste paginée des commandes
+      operationId: listOrders
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+      responses:
+        '200':
+          description: Liste paginée des commandes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+              examples:
+                sample:
+                  summary: Exemple de liste de commandes
+                  value: 
+                    - identifier: 1234
+                      customer_name: "Olivier"
+                      creation_datetime: "2025-08-30T12:34:56Z"
+                      total_amount: 1499.95
+                    - identifier: 1235
+                      customer_name: "Bob Martin"
+                      creation_datetime: "2025-08-30T14:23:10Z"
+                      total_amount: 765.20
+
+    post:
+      tags:
+        - Orders
+      summary: Créer une nouvelle commande (authentification requise)
+      operationId: createOrder
+      security:
+        - BasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+            examples:
+              sample:
+                summary: Exemple de création de commande
+                value:
+                  customer_name: "Olivier"
+                  creation_datetime: "2025-08-30T12:34:56Z"
+                  total_amount: 1499.95
+      responses:
+        '201':
+          description: Commande créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              examples:
+                sample:
+                  summary: Exemple de commande retournée
+                  value:
+                    identifier: 1234
+                    customer_name: "Olivier"
+                    creation_datetime: "2025-08-30T12:34:56Z"
+                    total_amount: 1499.95
+        '401':
+          description: Authentification requise
